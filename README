@@ -1,0 +1,10 @@
+Project 2 - E2EV Voting Design
+
+STEPS
+Step 1: The user logs in with their social security number and first and last name. The SSN is saved on a server hashed with SHA512 with salt. 
+
+Step 2: User fills out and submits ballot, it is sent to the polling “server” using public key RSA for one-way encryption
+
+Step 3: User receives confirmation that ballot was received and the user no longer has access to their previously submitted ballot and they cannot submit another ballot. 
+
+Step 4: Polling server publishes voting information 
