@@ -2,6 +2,7 @@ import hashlib
 import RSA
 import CLI
 import Paillier
+from OneWayList import OneWayList
 
 """
 Represent the user end of the poll
@@ -29,7 +30,6 @@ def start_poll():
             # get salt for user
             salt = database[creds["username"]]["salt"]
             hashed_auth = hashlib.sha256((auth + salt).encode()).hexdigest()
-            print(hashed_auth)
             
             if(hashed_auth == database[creds["username"]]["hash"]):
                 print("User Authenticated")
@@ -42,6 +42,10 @@ def start_poll():
                     # send encrypted form
                     encrypted_poll = Paillier.cast_vote(poll_results, pallier_public_key)
                     server.recieve_vote(encrypted_poll)
+
+                    # print user's hash and append for final poll verification
+                    print("Verification Value: " + database[creds["username"]]["hash"])
+                    hash_list.append(database[creds["username"]]["hash"])
 
                     # append ciphertext
 
@@ -73,6 +77,9 @@ database = {"john": {"hash": "3fa84d2e2373b99bfc810db89f1df76d4edf4b8cd7dfc6c46b
             "owen": {}
         }
 
+# list used for authenticating final poll
+hash_list = OneWayList([])
+
 # set up ballot server
 pallier_public_key, pallier_private_key = Paillier.setup_election()
 rsa_public_key, rsa_private_key = RSA.generate_rsa_keypair()
@@ -88,3 +95,4 @@ print(server.ballot_count)
 print(totalA)
 print(totalB)
 print(int(totalB).to_bytes((totalB.bit_length() + 7) // 8, 'big').decode('ascii'))
+print(hash_list)
