@@ -9,6 +9,18 @@ Represent the user end of the poll
 def start_poll():
     while(1):
 
+        # example hash
+        """
+        ex_user = "johnperveiler"
+        ex_password = "potofgold"
+
+        hashobj = hashlib.sha256(ex_user.encode())
+        print(hashobj.hexdigest())
+
+        hashobj = hashlib.sha256(ex_password.encode())
+        print(hashobj.hexdigest())
+        """
+
         # authentication system
         creds = CLI.get_creds()
         if(creds != -1):
