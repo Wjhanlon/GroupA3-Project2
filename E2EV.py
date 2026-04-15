@@ -12,8 +12,8 @@ def start_poll():
 
         # example hash
         """
-        ex_user = "johnuser1234"
-        ex_password = "password"
+        ex_user = "johnperveiler"
+        ex_password = "potofgold"
 
         hashobj = hashlib.sha256(ex_user.encode())
         print(hashobj.hexdigest())
