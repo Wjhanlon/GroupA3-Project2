@@ -30,4 +30,3 @@ database = [["fee8ac25b0116fd5296940f119ea3f2c336e0f9256d981ce7f423b1fb877e1dd",
 total_votes = 0
 
 print(total_votes)
-
