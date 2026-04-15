@@ -1,19 +1,23 @@
 import phe as paillier
 import json
 
-
 def setup_election():
     public_key, private_key = paillier.generate_paillier_keypair()
     return public_key, private_key
 
 def cast_vote(vote, public_key):
-    #voter machine
-    assert vote in (0,1)
+    # voter machine
+    if not isinstance(vote, dict):
+        print("Vote is invalid")
 
-    encrypted_vote = public_key.encrypt(vote)
+    str = ""
+    for i in vote.keys():
+        str += vote[i] + "|"
+
+    encrypted_vote = public_key.encrypt(int.from_bytes(str.encode('ascii'), byteorder='big'))
 
     payload = {
-        "ciphertext": str(encrypted_vote.ciphertext()),
+        "ciphertext": encrypted_vote.ciphertext(),
         "exponent": encrypted_vote.exponent
     }
     return json.dumps(payload)

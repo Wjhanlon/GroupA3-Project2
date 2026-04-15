@@ -1,26 +1,13 @@
 import hashlib
 import RSA
 import CLI
-import io
-
+import Paillier
 
 """
 Represent the user end of the poll
 """
 def start_poll():
     while(1):
-
-        # example hash
-        """
-        ex_user = "johnuser1234"
-        ex_password = "password"
-
-        hashobj = hashlib.sha256(ex_user.encode())
-        print(hashobj.hexdigest())
-
-        hashobj = hashlib.sha256(ex_password.encode())
-        print(hashobj.hexdigest())
-        """
 
         # authentication system
         creds = CLI.get_creds()
@@ -35,12 +22,22 @@ def start_poll():
             if(hashed_auth == database[creds["username"]]["hash"]):
                 print("User Authenticated")
                 # check if user voted
+                if(database[creds["username"]]["voted"] == True):
+                    print("User has already voted")
+                else:
+                    poll_results = CLI.poll()
+
+                    # send encrypted form
+                    encrypted_poll = Paillier.cast_vote(poll_results, pallier_public_key)
+                    server.recieve_vote(encrypted_poll)
+
+                    # append ciphertext
 
 
-                # send encrypted form
-                RSA.encrypt_RSA()
+                    # confirm vote
 
-                # confirm vote
+                    # set user as already voted
+                    database[creds["username"]]["voted"] = True
 
             else:
                 print("Incorrect Credentials")
@@ -53,7 +50,6 @@ def start_poll():
         if(option in ["N", "n"]):
             break
 
-
 """
 Represent the server end of the poll
     -this would be unviewable to attackers and voters in real world
@@ -65,9 +61,18 @@ database = {"john": {"hash": "3fa84d2e2373b99bfc810db89f1df76d4edf4b8cd7dfc6c46b
             "owen": {}
         }
 
+# set up ballot server
+pallier_public_key, pallier_private_key = Paillier.setup_election()
+rsa_public_key, rsa_private_key = RSA.generate_rsa_keypair()
+server = Paillier.Ballot_Server(pallier_public_key)
+
 start_poll()
 
-total_votes = 0
+poll_hash = server.get_encrypted_tally()
+totalA, totalB = Paillier.decrypt_final_tally(poll_hash, pallier_private_key, server.ballot_count)
 
 print("Poll Concluded")
-print(total_votes)
+print(server.ballot_count)
+print(totalA)
+print(totalB)
+print(int(totalB).to_bytes((totalB.bit_length() + 7) // 8, 'big').decode('ascii'))
