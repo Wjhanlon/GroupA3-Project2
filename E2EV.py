@@ -59,7 +59,7 @@ Represent the server end of the poll
     -this would be unviewable to attackers and voters in real world
 """
 # [ {username: {hash, salt, voted?}} ]
-database = {"johnperveiler": {"hash": "3fa84d2e2373b99bfc810db89f1df76d4edf4b8cd7dfc6c46b4542be78d98803", 
+database = {"john": {"hash": "3fa84d2e2373b99bfc810db89f1df76d4edf4b8cd7dfc6c46b4542be78d98803", 
                      "salt": "Default_Salt",
                      "voted": False},
             "owen": {}
