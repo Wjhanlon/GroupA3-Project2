@@ -2,27 +2,52 @@ import click
 import re
 import COLORS
 
-ssn_pattern = r"\d\d\d-\d\d-\d\d\d\d"
-
-@click.command()
-@click.option('--first_name', prompt=f'{COLORS.GREEN}Your first name{COLORS.RESET}', help='The user\'s first Name')
-@click.option('--last_name', prompt=f'{COLORS.GREEN}Your last name{COLORS.RESET}', help='The user\'s last name')
-@click.option('--ssn', prompt=f'{COLORS.GREEN}Your SSN ###-##-#### {COLORS.YELLOW}(your entry will be hidden){COLORS.RESET}', hide_input = True,help='The user\'s SSN')
-def get_creds(first_name, last_name, ssn):
+def get_creds():
     '''
-    This function gathers all the user's credentials. It can be called without any arguments or with --help for a more detailed breakdown on the arguments.\n
-    For this function to actually return anything, 'standalone_mode = False' must be entered as the parameter to this function. An example of this can be seen in the commented code at the bottom.
-    :return: A dictionary with keys {first_name, last_name, ssn} or -1 if the ssn doesn't follow format ###-##-####
+    This function gathers all the user's credentials.
+    :return: A dictionary with keys {first_name, last_name, ssn} or -1 if the ssn doesn't follow format ###-##-#### excluding hyphens.
     '''
+    ssn_pattern = r"\d\d\d\d\d\d\d\d\d"
+    click.clear()
+    user_name = click.prompt(f"{COLORS.GREEN}Your username{COLORS.RESET}", type=str)
+    click.clear()
+    first_name = click.prompt(f'{COLORS.GREEN}Your first name{COLORS.RESET}', type=str)
+    click.clear()
+    last_name = click.prompt(f'{COLORS.GREEN}Your last name{COLORS.RESET}', type=str)
+    click.clear()
+    ssn = click.prompt(f'{COLORS.GREEN}Your SSN{COLORS.YELLOW}(your entry will be hidden){COLORS.RESET}', type=str, hide_input = True)
     if re.search(ssn_pattern, ssn) is None:
-        print(f"{COLORS.YELLOW}The SSN is invalid. Make sure your SSN is entered as ###-##-#### including hyphens.{COLORS.RESET}")
+        click.clear()
+        print(f"{COLORS.YELLOW}The SSN is invalid. Make sure your SSN is entered as ###-##-#### excluding hyphens.{COLORS.RESET}")
         return -1
-    credentials = {"first_name": first_name.lower(), "last_name": last_name.lower(), "ssn": ssn}
+    credentials = {"username": user_name, "first_name": first_name.lower(), "last_name": last_name.lower(), "ssn": ssn}
 
     return credentials
+
+def poll():
+    click.clear()
+    candidates = ("william hanlan", "owen hart")
+    candidate = None
+    loop = True
+    while loop:
+        print(f"{COLORS.GREEN}William Hanlan (VP Cole Lentini)\nOwen Hart (VP John Perveiler)\n---------------------------------------------------------------{COLORS.RESET}")
+        candidate = click.prompt(f"{COLORS.RED}Your{COLORS.WHITE} presidential{COLORS.BLUE} candidate{COLORS.RESET}", type=str)
+        if candidate.lower() in candidates:
+            break
+        else:
+            click.clear()
+            print(f"{COLORS.RED}THAT WAS NOT AN OPTION.{COLORS.RESET}\n")
+    click.clear()
+    favorite_color = click.prompt(f"{COLORS.GREEN}Your favorite color{COLORS.RESET}", type=str)
+    click.clear()
+    jumping_jacks = click.prompt(f"{COLORS.GREEN}Number of jumping jacks you can do until failure{COLORS.RESET}", type=str)
+    poll_results = {"candidate": candidate, "favorite_color": favorite_color, "jumping_jacks": jumping_jacks}
+    return poll_results
+
 '''
 if __name__ == "__main__":
-    # The function MUST be called like this or else click will bone you
-    creds = get_creds(standalone_mode = False)
+    creds = get_creds()
     print(creds)
+    poll_results = poll()
+    print(poll_results)
 '''
