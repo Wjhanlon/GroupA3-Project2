@@ -1,10 +1,16 @@
 Project 2 - E2EV Voting Design
 
-STEPS
-Step 1: The user logs in with their social security number and first and last name. The SSN is saved on a server hashed with SHA512 with salt. 
-
-Step 2: User fills out and submits ballot, it is sent to the polling “server” using public key RSA for one-way encryption
-
-Step 3: User receives confirmation that ballot was received and the user no longer has access to their previously submitted ballot and they cannot submit another ballot. 
-
-Step 4: Polling server publishes voting information 
+- generate keypairs for RSA and Paillier, load voter registry (hash and salt each with Sha256)
+- CLI prompts for first name, last name, SSN with hidden input
+- credentials checked in the authentication server comparing the hashed ssn with stored salt against the registry
+- sets voted bool to true so they cant double vote, and issues a random rsa signed token
+- CLI displays poll and the voting runs locally
+- encrypts vote with paillier encryption and then the ciphertext and signed token get sent to the ballot server
+- cli stores ciphertext hash as the voters reciept
+- verify rsa token signature, check if that token hasnt been used already
+- homomorphically add to the running tally, so the ballot server never sees an unencypted vote
+- append ciphertext hash to some public available bulletin board, so anyone can verify the final tally is correct
+- server never has the private key so it cannot decrypt any individual ballot
+- Final tally gets decrypted and published alongside all individual ciphertext hashes
+- anyone can verify that the sum of the published ciphertexts matches the published encrypted tally
+- anyone can verify that the bulletin board receipt matches their stored receipt
