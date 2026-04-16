@@ -62,8 +62,7 @@ class Ballot_Server:
         receipt = hashlib.sha256(str(payload["ciphertext"]).encode()).hexdigest()
         self.bulletin_board.append(receipt)
 
-        print(f"    Ballot {self.ballot_count:02d} received | "
-              f"ciphertext={str(encrypted_vote.ciphertext())[:30]}...")
+        print(f"    Ballot {self.ballot_count:02d} received.")
         return receipt
 
 
