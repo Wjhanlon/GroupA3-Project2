@@ -78,7 +78,7 @@ class Ballot_Server:
         return sum(self.encrypted_ballots)
 
     def publish_bulletin_board(self):
-        print("\n Public Board")
+        print("\n Public List of Encrypted Ballots:")
         for(i, receipt) in enumerate(self.bulletin_board):
             print(f"[{i + 1:02d}] {receipt}")
 

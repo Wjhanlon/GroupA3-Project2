@@ -1,9 +1,9 @@
 Project 2 - E2EV Voting Design
 
 - generate keypairs for RSA and Paillier, load voter registry (hash and salt each with Sha256)
-- CLI prompts for first name, last name, SSN with hidden input
-- credentials checked in the authentication server comparing the hashed ssn with stored salt against the registry
-- sets voted bool to true so they cant double vote, and issues a random rsa signed token
+- CLI prompts for username, SSN with hidden input
+- credentials checked by comparing the hashed credentials with stored salt against the registry
+- sets voted bool to true so they cant double vote, and issues a random rsa signed token to further prevent this
 - CLI displays poll and the voting runs locally
 - encrypts vote with paillier encryption and then the ciphertext and signed token get sent to the ballot server
 - cli stores ciphertext hash as the voters reciept
@@ -14,3 +14,5 @@ Project 2 - E2EV Voting Design
 - Final tally gets decrypted and published alongside all individual ciphertext hashes
 - anyone can verify that the sum of the published ciphertexts matches the published encrypted tally
 - anyone can verify that the bulletin board receipt matches their stored receipt
+- tokens contain no voter identity, allowing for no matching of votes to user
+- tradeoff is a single point of trust, all auth and ballot casting are happening on the same machine in this example (in the real world you would have them seperate)

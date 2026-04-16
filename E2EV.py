@@ -105,9 +105,12 @@ server.publish_bulletin_board()
 encrypted_tally = server.get_encrypted_tally()
 totalA, totalB = Paillier.decrypt_final_tally(encrypted_tally, pallier_private_key, server.ballot_count)
 
-print("Poll Concluded")
+print(f"\n Poll Concluded")
 print(f"Total Ballots: {server.ballot_count}")
 print(f"Votes for William Hanlon: {totalA}")
-print(f"Votes for Owen Hart {totalB}")
-print(int(totalB).to_bytes((totalB.bit_length() + 7) // 8, 'big').decode('ascii'))
-print(hash_list)
+print(f"Votes for Owen Hart: {totalB}")
+
+
+print("\nVoter Hash Log:")
+for i, h in enumerate(hash_list):
+    print(f"  [{i+1:02d}] {h}")
