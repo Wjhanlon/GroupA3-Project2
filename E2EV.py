@@ -25,6 +25,9 @@ def start_poll():
         # authentication system
         creds = CLI.get_creds()
         if(creds != -1):
+            if(creds["username"] not in database):
+                print("User does not exist")
+
             auth = creds["username"] + creds["ssn"]
             
             # get salt for user
@@ -37,18 +40,27 @@ def start_poll():
                 if(database[creds["username"]]["voted"] == True):
                     print("User has already voted")
                 else:
+                    print("User Authenticated")
+
+                    token, token_sig = RSA.issue_token(rsa_private_key)
+
                     poll_results = CLI.poll()
 
                     # send encrypted form
-                    encrypted_poll = Paillier.cast_vote(poll_results, pallier_public_key)
-                    server.recieve_vote(encrypted_poll)
+                    vote_index = CLI.candidate_to_index(poll_results["candidate"])
+                    encrypted_poll = Paillier.cast_vote(vote_index, pallier_public_key)
+
+
+                    try:
+                        receipt = server.receive_vote(encrypted_poll, token, token_sig)
+                        print("Verification Value: " + database[creds["username"]]["hash"])
+                        hash_list.append(database[creds["username"]]["hash"])
+                        receipt_list.append(receipt)
+                    except Exception as e:
+                        print(f"Error: {e}")
 
                     # print user's hash and append for final poll verification
-                    print("Verification Value: " + database[creds["username"]]["hash"])
-                    hash_list.append(database[creds["username"]]["hash"])
-
                     # append ciphertext
-
 
                     # confirm vote
 
@@ -79,20 +91,23 @@ database = {"john": {"hash": "3fa84d2e2373b99bfc810db89f1df76d4edf4b8cd7dfc6c46b
 
 # list used for authenticating final poll
 hash_list = OneWayList([])
+receipt_list = OneWayList([])
 
 # set up ballot server
 pallier_public_key, pallier_private_key = Paillier.setup_election()
-rsa_public_key, rsa_private_key = RSA.generate_rsa_keypair()
-server = Paillier.Ballot_Server(pallier_public_key)
+rsa_private_key, rsa_public_key = RSA.generate_rsa_keypair()
+server = Paillier.Ballot_Server(pallier_public_key, rsa_public_key)
 
 start_poll()
 
-poll_hash = server.get_encrypted_tally()
-totalA, totalB = Paillier.decrypt_final_tally(poll_hash, pallier_private_key, server.ballot_count)
+server.publish_bulletin_board()
+
+encrypted_tally = server.get_encrypted_tally()
+totalA, totalB = Paillier.decrypt_final_tally(encrypted_tally, pallier_private_key, server.ballot_count)
 
 print("Poll Concluded")
-print(server.ballot_count)
-print(totalA)
-print(totalB)
+print(f"Total Ballots: {server.ballot_count}")
+print(f"Votes for William Hanlon: {totalA}")
+print(f"Votes for Owen Hart {totalB}")
 print(int(totalB).to_bytes((totalB.bit_length() + 7) // 8, 'big').decode('ascii'))
 print(hash_list)

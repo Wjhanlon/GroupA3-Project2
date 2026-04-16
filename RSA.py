@@ -1,6 +1,7 @@
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.exceptions import InvalidSignature
+import os
 
 
 def generate_rsa_keypair():
@@ -8,16 +9,17 @@ def generate_rsa_keypair():
     return private_key, private_key.public_key()
 
 
-def sign_token(token_id: str, private_key) -> str:
-    sig = private_key.sign(token_id.encode(), padding.PKCS1v15(), hashes.SHA256())
-    return sig.hex()
+def issue_token(private_key):
+    token = os.urandom(32)
+    sig = private_key.sign(token, padding.PKCS1v15(), hashes.SHA256())
+    return token, sig.hex()
 
 
-def verify_token(token_id: str, signature_hex: str, public_key) -> bool:
+def verify_token(token_id, signature_hex, public_key):
     try:
         public_key.verify(
             bytes.fromhex(signature_hex),
-            token_id.encode(),
+            token_id,
             padding.PKCS1v15(),
             hashes.SHA256(),
         )
