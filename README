@@ -6,13 +6,17 @@ Project 2 - E2EV Voting Design
 - sets voted bool to true so they cant double vote, and issues a random rsa signed token to further prevent this
 - CLI displays poll and the voting runs locally
 - encrypts vote with paillier encryption and then the ciphertext and signed token get sent to the ballot server
-- cli stores ciphertext hash as the voters reciept
-- verify rsa token signature, check if that token hasnt been used already
-- homomorphically add to the running tally, so the ballot server never sees an unencypted vote
+- cli stores ciphertext hash as the voters receipt
+- verify rsa token signature, check if that token hasn't been used already
+- homomorphically add to the running tally, so the ballot server never sees an unencrypted vote
 - append ciphertext hash to some public available bulletin board, so anyone can verify the final tally is correct
 - server never has the private key so it cannot decrypt any individual ballot
 - Final tally gets decrypted and published alongside all individual ciphertext hashes
 - anyone can verify that the sum of the published ciphertexts matches the published encrypted tally
 - anyone can verify that the bulletin board receipt matches their stored receipt
 - tokens contain no voter identity, allowing for no matching of votes to user
-- tradeoff is a single point of trust, all auth and ballot casting are happening on the same machine in this example (in the real world you would have them seperate)
+- tradeoff is a single point of trust, all auth and ballot casting are happening on the same machine in this example (in the real world we would have them separate)
+
+
+To run Program: python ./E2EV.py
+To add new users for testing: run the userHashGenerator.py with a new username and ssn, then add a new user and hash to the representation of the database in E2EV.py

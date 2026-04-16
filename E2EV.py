@@ -12,9 +12,10 @@ def start_poll():
 
         # example hash
         """
-        ex_user = "johnperveiler"
-        ex_password = "potofgold"
-
+        ex_user = "john"
+        ex_ssn = "222-33-4444"
+        
+        
         hashobj = hashlib.sha256(ex_user.encode())
         print(hashobj.hexdigest())
 
@@ -86,7 +87,12 @@ Represent the server end of the poll
 database = {"john": {"hash": "3fa84d2e2373b99bfc810db89f1df76d4edf4b8cd7dfc6c46b4542be78d98803", 
                      "salt": "Default_Salt",
                      "voted": False},
-            "owen": {}
+            "owen": {"hash": "d6a6bc4ceb85391c9ba4113a36a0ea49cf4a0bad53c35d5b832ab1563a22bfae",
+                     "salt": "Default_Salt",
+                     "voted": False},
+            "colelentini": {"hash": "d3693ab114f1e4f11704083c74c83254941c4e6e38ff07dca517db35901a4c82",
+                            "salt": "Default_Salt",
+                            "voted": False},
         }
 
 # list used for authenticating final poll
