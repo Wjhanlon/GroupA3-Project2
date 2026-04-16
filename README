@@ -17,6 +17,12 @@ Project 2 - E2EV Voting Design
 - tokens contain no voter identity, allowing for no matching of votes to user
 - tradeoff is a single point of trust, all auth and ballot casting are happening on the same machine in this example (in the real world we would have them separate)
 
-
 To run Program: python ./E2EV.py
+
+Example existing user:
+    -username: john
+    -ssn: 222-33-4444
+
+Try to guess the rest!
+
 To add new users for testing: run the userHashGenerator.py with a new username and ssn, then add a new user and hash to the representation of the database in E2EV.py
