@@ -5,6 +5,8 @@ import Paillier
 import Database
 from OneWayList import OneWayList
 
+
+
 """
 Represent the user end of the poll
 """
@@ -26,55 +28,49 @@ def start_poll():
         # authentication system
         creds = CLI.get_creds()
         if(creds != -1):
-            if(Database.database.user_exists(creds["username"])):
+            if(not Database.database.user_exists(creds["username"])):
                 print("User does not exist")
-
-            auth = creds["username"] + creds["password"]
             
-            # get salt for user
-            salt = Database.database.get_salt(creds["username"])
-            hashed_auth = hashlib.scrypt(auth.encode(),
-                                         salt=salt.encode(),
-                                         n=16384,
-                                         r=8,
-                                         p=1,
-                                         ).hex()
-            
-            if(hashed_auth == Database.database.get_hash(creds["username"])):
-                print("User Authenticated")
-                # check if user voted
-                if(Database.database.user_voted(creds["username"])):
-                    print("User has already voted")
-                else:
-                    print("User Authenticated")
-
-                    token, token_sig = RSA.issue_token(rsa_private_key)
-
-                    poll_results = CLI.poll()
-
-                    # send encrypted form
-                    vote_index = CLI.candidate_to_index(poll_results["candidate"])
-                    encrypted_poll = accept_vote(server, vote_index, token, token_sig)
-
-
-                    try:
-                        receipt = encrypted_poll
-                        print("Verification Value: " + Database.database.get_hash(creds["username"]))
-                        hash_list.append(Database.database.get_hash(creds["username"]))
-                        receipt_list.append(receipt)
-                    except Exception as e:
-                        print(f"Error: {e}")
-
-                    # print user's hash and append for final poll verification
-                    # append ciphertext
-
-                    # confirm vote
-
-                    # set user as already voted
-                    Database.database.set_voted(creds["username"])
-
             else:
-                print("Incorrect Credentials")
+                auth = creds["username"] + creds["password"]
+                
+                # get salt for user
+                salt = Database.database.get_salt(creds["username"])
+                hashed_auth = hashlib.scrypt(auth.encode(),
+                                            salt=salt.encode(),
+                                            n=16384,
+                                            r=8,
+                                            p=1,
+                                            ).hex()
+                
+                if(hashed_auth == Database.database.get_hash(creds["username"])):
+                    print("User Authenticated")
+                    # check if user voted
+                    if(Database.database.user_voted(creds["username"])):
+                        print("User has already voted")
+                    else:
+                        print("User Authenticated")
+
+                        token, token_sig = issue_user_token(creds["username"], creds["password"], rsa_private_key)
+
+                        poll_results = CLI.poll()
+
+                        # send encrypted form
+                        vote_index = CLI.candidate_to_index(poll_results["candidate"])
+                        encrypted_poll = accept_vote(server, vote_index, token, token_sig)
+
+                        try:
+                            receipt = encrypted_poll
+                            print("Verification Value: " + Database.database.get_hash(creds["username"]))
+                            hash_list.append(Database.database.get_hash(creds["username"]))
+                            receipt_list.append(receipt)
+
+                            Database.database.set_voted(creds["username"])
+                        except Exception as e:
+                            print(f"Error: {e}")
+
+                else:
+                    print("Incorrect Credentials")
 
 
         # continue votes?
@@ -89,7 +85,6 @@ Represent the server end of the poll
     -this would be UNVIEWABLE to attackers and voters in real world
 """
 # [ {username: {hash, salt, voted?}} ]
-
 
 # list used for authenticating final poll
 hash_list = OneWayList([])
@@ -107,6 +102,29 @@ def accept_vote(server, vote_index, token, token_sig):
         token,
         token_sig
     )
+
+# server-side token issuing
+def issue_user_token(username, password, private_key):
+    if not Database.database.user_exists(username):
+        raise ValueError("User does not exist")
+
+    auth = username + password
+    salt = Database.database.get_salt(username)
+    hashed_auth = hashlib.scrypt(
+        auth.encode(),
+        salt=salt.encode(),
+        n=16384,
+        r=8,
+        p=1,
+    ).hex()
+
+    if hashed_auth != Database.database.get_hash(username):
+        raise ValueError("Incorrect Credentials")
+
+    if Database.database.user_voted(username):
+        raise ValueError("User has already voted")
+
+    return RSA.issue_token(private_key)
 
 start_poll()
 
