@@ -54,11 +54,11 @@ def start_poll():
 
                     # send encrypted form
                     vote_index = CLI.candidate_to_index(poll_results["candidate"])
-                    encrypted_poll = Paillier.cast_vote(vote_index, pallier_public_key)
+                    encrypted_poll = accept_vote(server, vote_index, token, token_sig)
 
 
                     try:
-                        receipt = server.receive_vote(encrypted_poll, token, token_sig)
+                        receipt = encrypted_poll
                         print("Verification Value: " + Database.database.get_hash(creds["username"]))
                         hash_list.append(Database.database.get_hash(creds["username"]))
                         receipt_list.append(receipt)
@@ -99,6 +99,14 @@ receipt_list = OneWayList([])
 pallier_public_key, pallier_private_key = Paillier.setup_election()
 rsa_private_key, rsa_public_key = RSA.generate_rsa_keypair()
 server = Paillier.Ballot_Server(pallier_public_key, rsa_public_key)
+
+# wrap receive vote in function with different parameters to protect local modification of randomness r
+def accept_vote(server, vote_index, token, token_sig):
+    return server.receive_vote(
+        Paillier.cast_vote(vote_index, pallier_public_key),
+        token,
+        token_sig
+    )
 
 start_poll()
 
