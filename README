@@ -21,7 +21,7 @@ To run Program: python ./E2EV.py
 
 Example existing user:
     -username: john
-    -ssn: 222-33-4444
+    -password: johnpassword
 
 Try to guess the rest!
 
