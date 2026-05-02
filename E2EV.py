@@ -130,13 +130,20 @@ start_poll()
 
 server.publish_bulletin_board()
 
-encrypted_tally = server.get_encrypted_tally()
-totalA, totalB = Paillier.decrypt_final_tally(encrypted_tally, pallier_private_key, server.ballot_count)
-
-print(f"\n Poll Concluded")
-print(f"Total Ballots: {server.ballot_count}")
-print(f"Votes for William Hanlon: {totalA}")
-print(f"Votes for Owen Hart: {totalB}")
+encrypted_tally_A, encrypted_tally_B = server.get_encrypted_tally()
+try:
+    totalA, totalB = Paillier.decrypt_final_tally(
+        encrypted_tally_A,
+        encrypted_tally_B,
+        pallier_private_key,
+        server.ballot_count
+    )
+    print(f"\n Poll Concluded")
+    print(f"Total Ballots: {server.ballot_count}")
+    print(f"Votes for William Hanlon: {totalA}")
+    print(f"Votes for Owen Hart: {totalB}")
+except ValueError as e:
+    print(f"TALLY ERROR: {e}")
 
 
 print("\nVoter Hash Log:")
