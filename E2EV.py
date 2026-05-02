@@ -13,8 +13,7 @@ def start_poll():
         # example hash
         """
         ex_user = "john"
-        ex_ssn = "222-33-4444"
-        
+        ex_pass = "222-33-4444"
         
         hashobj = hashlib.sha256(ex_user.encode())
         print(hashobj.hexdigest())
@@ -29,11 +28,16 @@ def start_poll():
             if(creds["username"] not in database):
                 print("User does not exist")
 
-            auth = creds["username"] + creds["ssn"]
+            auth = creds["username"] + creds["password"]
             
             # get salt for user
             salt = database[creds["username"]]["salt"]
-            hashed_auth = hashlib.sha256((auth + salt).encode()).hexdigest()
+            hashed_auth = hashlib.scrypt((auth).encode(), 
+                                    salt=salt.encode(),
+                                    n=16384,
+                                    r=8,
+                                    p=1,
+                                    ).hex()
             
             if(hashed_auth == database[creds["username"]]["hash"]):
                 print("User Authenticated")
@@ -81,17 +85,17 @@ def start_poll():
 
 """
 Represent the server end of the poll
-    -this would be unviewable to attackers and voters in real world
+    -this would be UNVIEWABLE to attackers and voters in real world
 """
 # [ {username: {hash, salt, voted?}} ]
-database = {"john": {"hash": "3fa84d2e2373b99bfc810db89f1df76d4edf4b8cd7dfc6c46b4542be78d98803", 
-                     "salt": "Default_Salt",
+database = {"john": {"hash": "613438204179c6daa43d04e32fc0509d76b87efad1bc70f84038a1065fcdb7dec3683872c35f5d20c251248db157cb9fdea16d99753476db87ca3d9db7fd6cc9", 
+                     "salt": "5491042904581601128657979932589155499693898775280553248067569895156099593707840853134279929504198257407120492966788420727587998551497525552117164422822341",
                      "voted": False},
-            "owen": {"hash": "d6a6bc4ceb85391c9ba4113a36a0ea49cf4a0bad53c35d5b832ab1563a22bfae",
-                     "salt": "Default_Salt",
+            "owen": {"hash": "1cd6456f869982462b4d111f8abfb5c9c09e7a5a34c84b12c80ae5bab4514a4b367ca0f2da18401a5dcca9ae69708dafb319a0f2f3158eecaaafd157720bf76f",
+                     "salt": "11470618636631188992448980835259862494560825989902152101415102057722156057653446316377871334408059259295477871909772111141208436623765633405097491079769148",
                      "voted": False},
-            "colelentini": {"hash": "d3693ab114f1e4f11704083c74c83254941c4e6e38ff07dca517db35901a4c82",
-                            "salt": "Default_Salt",
+            "colelentini": {"hash": "d98d585c1e65313447ed91e22ae0ac238fa66794e58de0015e971d2afae52bd473729b2fa163ee7444f2daf93260b4e01ae898bc0ddd05ab0e7deef82ac0c4f0",
+                            "salt": "4474224011127718864367360795317029004273840252901266827352110545395019104677140338547586238487906388464847154944094665793056033201216940692650853568233924",
                             "voted": False},
         }
 

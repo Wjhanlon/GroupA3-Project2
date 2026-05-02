@@ -1,5 +1,14 @@
 import hashlib
+import os
 username = "colelentini"
-ssn = "987654321"
-salt = "Default_Salt"
-print(hashlib.sha256((username + ssn + salt).encode()).hexdigest())
+password = "password123"
+
+salt = str(int.from_bytes(os.urandom(64)))
+print("salt: " + salt)
+
+print("hash: " + str(hashlib.scrypt((username + password).encode(), 
+                                    salt=salt.encode(),
+                                    n=16384,
+                                    r=8,
+                                    p=1,
+                                    ).hex()))

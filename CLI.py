@@ -7,17 +7,14 @@ def get_creds():
     This function gathers all the user's credentials.
     :return: A dictionary with keys {username, ssn} or -1 if the ssn doesn't follow format ###-##-#### excluding hyphens.
     '''
-    ssn_pattern = r"\d\d\d\d\d\d\d\d\d"
     click.clear()
     user_name = click.prompt(f"{COLORS.GREEN}Your username{COLORS.RESET}", type=str)
     click.clear()
 
-    ssn = click.prompt(f'{COLORS.GREEN}Your SSN{COLORS.YELLOW} (your entry will be hidden){COLORS.RESET}', type=str, hide_input = True)
-    if re.search(ssn_pattern, ssn) is None:
-        click.clear()
-        print(f"{COLORS.YELLOW}The SSN is invalid. Make sure your SSN is entered as ###-##-#### excluding hyphens.{COLORS.RESET}")
-        return -1
-    credentials = {"username": user_name, "ssn": ssn}
+    password = click.prompt(f"{COLORS.GREEN}Your password{COLORS.YELLOW} (your entry will be hidden){COLORS.RESET}", type=str, hide_input=True)
+    click.clear()
+
+    credentials = {"username": user_name, "password": password}
 
     return credentials
 
